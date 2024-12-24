@@ -1,34 +1,34 @@
+// srs/routers/contacts.js
+
 import { Router } from 'express';
-import { getAllContacts, getContactsById } from '../services/services.js';
+import {
+  createContactController,
+  deleteContactController,
+  getContactsByIdControllers,
+  getContactsControllers,
+  upsertStudentController,
+} from '../controllers/contacts.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
 const router = Router();
 
-router.get('/contacts', async (req, res) => {
-  const contacts = await getAllContacts();
-  res.status(200).json({
-    status: 200,
-    message: 'Successfully found contacts!',
-    data: contacts,
-  });
-});
+router.get('/contacts', ctrlWrapper(getContactsControllers));
+router.get('/contacts/:contactId', ctrlWrapper(getContactsByIdControllers));
 
-router.get('/contacts/:contactId', async (req, res) => {
-  const { contactId } = req.params;
+router.post('/contacts', ctrlWrapper(createContactController));
 
-  const data = await getContactsById(contactId);
+router.delete('/contacts/:contactId', ctrlWrapper(deleteContactController));
 
-  if (!data) {
-    return res.status(404).json({
-      status: 404,
-      message: `Contact with id=${contactId} not found`,
-    });
-  }
-
-  res.json({
-    status: 200,
-    message: `Successfully find Contact with id=${contactId}`,
-    data,
-  });
-});
-
+router.patch('/contacts/:contactId', ctrlWrapper(upsertStudentController));
 export default router;
+
+// Sample Request Bodies
+/* 
+  {
+   "name": "Jane Smith",
+   "phoneNumber": "+380994752863",
+   "email": "jane.smith@example.com",
+   "isFavourite": true,
+   "contactType": "home"
+  }
+*/
