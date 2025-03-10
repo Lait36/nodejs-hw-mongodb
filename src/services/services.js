@@ -1,9 +1,20 @@
 // srs/services/services.js
 import { contactsCollection } from '../db/contacts.js';
-
-export const getAllContacts = async () => {
-  const contacts = await contactsCollection.find();
-  return contacts;
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
+export const getAllContacts = async (page, perPage) => {
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
+  const contactQuery = contactsCollection.find();
+  const contactsCount = await contactsCollection
+    .find()
+    .merge(contactQuery)
+    .countDocuments();
+  const contacts = await contactQuery.skip(skip).limit(limit).exec();
+  const paginationData = calculatePaginationData(contactsCount, perPage, page);
+  return {
+    data: contacts,
+    ...paginationData,
+  };
 };
 export const getContactsById = async (contactId) => {
   const contact = await contactsCollection.findById(contactId);
@@ -14,7 +25,7 @@ export const createContact = async (payload) => {
   return contact;
 };
 export const deleteContact = async (contactId) => {
-  const contact = await contactsCollection.findOneAndDelete({ _id: contactId, });
+  const contact = await contactsCollection.findOneAndDelete({ _id: contactId });
   return contact;
 };
 export const updateStudent = async (contactId, payload, options = {}) => {

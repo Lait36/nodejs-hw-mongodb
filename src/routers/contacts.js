@@ -28,7 +28,6 @@ router.get(
 
 router.post(
   '/contacts',
-  isValiId,
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
