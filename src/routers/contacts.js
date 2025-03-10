@@ -9,17 +9,42 @@ import {
   upsertStudentController,
 } from '../controllers/contacts.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import { validateBody } from '../middlewares/validateBody.js';
+import {
+  createContactSchema,
+  upserContactSchema,
+} from '../validation/contacts.js';
+import { isValiId } from '../middlewares/isValidId.js';
 
 const router = Router();
 
 router.get('/contacts', ctrlWrapper(getContactsControllers));
-router.get('/contacts/:contactId', ctrlWrapper(getContactsByIdControllers));
 
-router.post('/contacts', ctrlWrapper(createContactController));
+router.get(
+  '/contacts/:contactId',
+  isValiId,
+  ctrlWrapper(getContactsByIdControllers),
+);
 
-router.delete('/contacts/:contactId', ctrlWrapper(deleteContactController));
+router.post(
+  '/contacts',
+  isValiId,
+  validateBody(createContactSchema),
+  ctrlWrapper(createContactController),
+);
 
-router.patch('/contacts/:contactId', ctrlWrapper(upsertStudentController));
+router.delete(
+  '/contacts/:contactId',
+  isValiId,
+  ctrlWrapper(deleteContactController),
+);
+
+router.patch(
+  '/contacts/:contactId',
+  isValiId,
+  validateBody(upserContactSchema),
+  ctrlWrapper(upsertStudentController),
+);
 export default router;
 
 // Sample Request Bodies
