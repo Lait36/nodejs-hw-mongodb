@@ -1,19 +1,27 @@
 // srs/services/services.js
 import { contactsCollection } from '../db/contacts.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
-export const getAllContacts = async (page, perPage) => {
+export const getAllContacts = async ({page, perPage, sortBy, sortOrder}) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
+
   const contactQuery = contactsCollection.find();
+  console.log('service sortBy:', sortBy); // Має бути 'name'
+  console.log('service sortOrder:', sortOrder); // Має бути 'desc'
   const contactsCount = await contactsCollection
     .find()
     .merge(contactQuery)
     .countDocuments();
-  const contacts = await contactQuery.skip(skip).limit(limit).exec();
+  const contacts = await contactQuery
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder })
+    .exec();
   const paginationData = calculatePaginationData(contactsCount, perPage, page);
   return {
     data: contacts,
     ...paginationData,
+    sortOrder: sortOrder,
   };
 };
 export const getContactsById = async (contactId) => {

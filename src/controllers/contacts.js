@@ -8,10 +8,15 @@ import {
   updateStudent,
 } from '../services/services.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
 
 export const getContactsControllers = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
-  const contacts = await getAllContacts(page, perPage);
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+  console.log('controller sortBy:', sortBy);  // Має бути 'name'
+  console.log('controller sortOrder:', sortOrder);  // Має бути 'desc'
+
+  const contacts = await getAllContacts({page, perPage, sortBy, sortOrder});
   res.status(200).json({
     status: 200,
     message: 'Successfully found contacts!',
