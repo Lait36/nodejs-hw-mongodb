@@ -1,22 +1,43 @@
 // srs/services/services.js
 import { contactsCollection } from '../db/contacts.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
-export const getAllContacts = async ({page, perPage, sortBy, sortOrder}) => {
+export const getAllContacts = async ({
+  page,
+  perPage,
+  sortBy,
+  sortOrder,
+  filter,
+}) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
   const contactQuery = contactsCollection.find();
-  console.log('service sortBy:', sortBy); // Має бути 'name'
-  console.log('service sortOrder:', sortOrder); // Має бути 'desc'
-  const contactsCount = await contactsCollection
-    .find()
-    .merge(contactQuery)
-    .countDocuments();
-  const contacts = await contactQuery
-    .skip(skip)
-    .limit(limit)
-    .sort({ [sortBy]: sortOrder })
-    .exec();
+
+  if (filter.contactType) {
+    contactQuery.where('contactType').equals(filter.contactType);
+  }
+  if (filter.isFavourite) {
+    contactQuery.where('isFavourite').equals(filter.isFavourite);
+  }
+
+  // const contactsCount = await contactsCollection
+  //   .find()
+  //   .merge(contactQuery)
+  //   .countDocuments();
+  // const contacts = await contactQuery
+  //   .skip(skip)
+  //   .limit(limit)
+  //   .sort({ [sortBy]: sortOrder })
+  //   .exec();
+
+  const [contactsCount, contacts] = await Promise.all([
+    contactsCollection.find().merge(contactQuery).countDocuments(),
+    contactQuery
+      .skip(skip)
+      .limit(limit)
+      .sort({ [sortBy]: sortOrder })
+      .exec(),
+  ]);
   const paginationData = calculatePaginationData(contactsCount, perPage, page);
   return {
     data: contacts,
