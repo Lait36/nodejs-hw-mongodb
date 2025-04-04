@@ -6,7 +6,7 @@ import {
   getAllContacts,
   getContactsById,
   updateStudent,
-} from '../services/services.js';
+} from '../services/contacts.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
@@ -68,7 +68,7 @@ export const deleteContactController = async (req, res, next) => {
   //   data: contact,
   // });
 };
-export const upsertStudentController = async (req, res, next) => {
+export const upsertContactsController = async (req, res, next) => {
   const { contactId } = req.params;
   const contact = await updateStudent(contactId, req.body);
   if (!contact) {

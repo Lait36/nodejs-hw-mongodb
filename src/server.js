@@ -2,7 +2,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import contactRoutes from './routers/contacts.js';
+import router from './routers/index.js';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
@@ -36,7 +36,7 @@ export const setupServer = () => {
     });
   });
 
-  app.use(contactRoutes);
+  app.use(router);
 
   app.use('*', notFoundHandler);
   app.use(errorHandler);

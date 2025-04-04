@@ -1,4 +1,4 @@
-// srs/db/contacts.js
+// srs/db/models/contacts.js
 
 import { Schema, model } from 'mongoose';
 
