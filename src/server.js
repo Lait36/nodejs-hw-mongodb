@@ -7,6 +7,7 @@ import pino from 'pino';
 import pinoHttp from 'pino-http';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import cookieParser from 'cookie-parser';
 
 const logger = pino({
   transport: {
@@ -26,10 +27,12 @@ export const setupServer = () => {
   );
   app.use(
     express.json({
-      type: ['application/json', 'application/vnd.api+json'], //Не обов'язково, вказує які значення Content-Type будуть оброблятися 
+      type: ['application/json', 'application/vnd.api+json'], //Не обов'язково, вказує які значення Content-Type будуть оброблятися
       // limit - обмеження розміру тіла
     }),
   );
+  app.use(cookieParser());
+
   app.get('/', (req, res) => {
     res.status(200).json({
       message: 'Home page',
@@ -39,6 +42,7 @@ export const setupServer = () => {
   app.use(router);
 
   app.use('*', notFoundHandler);
+  
   app.use(errorHandler);
 
   app.listen(PORT, () => {
