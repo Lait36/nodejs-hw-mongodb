@@ -15,16 +15,14 @@ import {
   upserContactSchema,
 } from '../validation/contacts.js';
 import { isValiId } from '../middlewares/isValidId.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 const router = Router();
+router.use(authenticate);
 
 router.get('/', ctrlWrapper(getContactsControllers));
 
-router.get(
-  '/:contactId',
-  isValiId,
-  ctrlWrapper(getContactsByIdControllers),
-);
+router.get('/:contactId', isValiId, ctrlWrapper(getContactsByIdControllers));
 
 router.post(
   '/',
@@ -32,11 +30,7 @@ router.post(
   ctrlWrapper(createContactController),
 );
 
-router.delete(
-  '/:contactId',
-  isValiId,
-  ctrlWrapper(deleteContactController),
-);
+router.delete('/:contactId', isValiId, ctrlWrapper(deleteContactController));
 
 router.patch(
   '/:contactId',
